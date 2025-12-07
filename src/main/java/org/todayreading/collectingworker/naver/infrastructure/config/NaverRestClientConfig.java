@@ -1,4 +1,4 @@
-package org.todayreading.collectingworker.naver.config;
+package org.todayreading.collectingworker.naver.infrastructure.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

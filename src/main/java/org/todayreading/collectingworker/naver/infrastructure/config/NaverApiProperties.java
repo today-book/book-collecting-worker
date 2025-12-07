@@ -1,4 +1,4 @@
-package org.todayreading.collectingworker.naver.config;
+package org.todayreading.collectingworker.naver.infrastructure.config;
 
 import java.time.Duration;
 import lombok.Getter;

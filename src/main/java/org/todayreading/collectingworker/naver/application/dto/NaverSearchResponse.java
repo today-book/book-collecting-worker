@@ -1,4 +1,4 @@
-package org.todayreading.collectingworker.naver.dto;
+package org.todayreading.collectingworker.naver.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
