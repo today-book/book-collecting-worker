@@ -1,9 +1,11 @@
-package org.todayreading.book_collecting_worker;
+package org.todayreading.collectingworker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan(basePackages = "org.todayreading.collectingworker.naver.config")
 public class BookCollectingWorkerApplication {
 
 	public static void main(String[] args) {

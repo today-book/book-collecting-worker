@@ -1,4 +1,4 @@
-package org.todayreading.book_collecting_worker;
+package org.todayreading.collectingworker.common;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
