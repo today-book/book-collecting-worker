@@ -27,7 +27,7 @@ public class NaverRestClient implements NaverSearchPort {
     String actualSort =
         (sort != null) ? sort : naverApiProperties.getSearch().getSort();
 
-    return naverRestClient.get()
+    NaverSearchResponse response = naverRestClient.get()
         .uri(uriBuilder -> uriBuilder
             .path(PATH)
             .queryParam("query", query)
@@ -37,5 +37,11 @@ public class NaverRestClient implements NaverSearchPort {
             .build())
         .retrieve()
         .body(NaverSearchResponse.class);
+
+    if (response == null) {
+      // 추후에 공통 에러 처리
+      throw new IllegalStateException("Naver API response is null.");
+    }
+    return response;
   }
 }
