@@ -23,7 +23,7 @@ import org.todayreading.collectingworker.naver.application.port.out.BookRawPubli
 @RequiredArgsConstructor
 public class BookRawKafkaAdapter implements BookRawPublishPort {
 
-  @Value("${naver.kafka.topic.book-raw}")
+  @Value("${naver.kafka.topic}")
   private String topicName;
 
   private final KafkaTemplate<String, NaverSearchItem> kafkaTemplate;

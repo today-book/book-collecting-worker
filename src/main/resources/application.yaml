@@ -3,7 +3,7 @@ spring:
     name: book-collecting-worker
 
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: 34.64.57.180:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -19,5 +19,4 @@ naver:
     daily-max-start: 301   # 일일 스캔용 상한
     sort: date             # 또는 sim
   kafka:
-    topic:
-      book-raw: book-raw
+    topic: book.raw
