@@ -3,6 +3,7 @@ package org.todayreading.collectingworker.naver.infrastructure.kafka;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;
@@ -11,7 +12,7 @@ import org.todayreading.collectingworker.naver.application.port.out.BookRawPubli
 /**
  * {@link BookRawPublishPort}의 Kafka 기반 구현체입니다.
  *
- * <p>수집된 네이버 도서 원시 데이터를 Kafka의 {@link #TOPIC_NAME} 토픽으로 발행하는
+ * <p>수집된 네이버 도서 원시 데이터를 Kafka의 {@link #topicName} 토픽으로 발행하는
  * 인프라스트럭처 어댑터 역할을 담당합니다.
  *
  * @author 박성준
@@ -22,7 +23,8 @@ import org.todayreading.collectingworker.naver.application.port.out.BookRawPubli
 @RequiredArgsConstructor
 public class BookRawKafkaAdapter implements BookRawPublishPort {
 
-  private static final String TOPIC_NAME = "book.raw";
+  @Value("${naver.kafka.topic.book-raw}")
+  private String topicName;
 
   private final KafkaTemplate<String, NaverSearchItem> kafkaTemplate;
 
@@ -41,9 +43,9 @@ public class BookRawKafkaAdapter implements BookRawPublishPort {
     }
 
     for (NaverSearchItem item : items) {
-      kafkaTemplate.send(TOPIC_NAME, item);
+      kafkaTemplate.send(topicName, item);
     }
 
-    log.info("Published {} items to Kafka topic '{}'.", items.size(), TOPIC_NAME);
+    log.info("Published {} items to Kafka topic '{}'.", items.size(), topicName);
   }
 }
