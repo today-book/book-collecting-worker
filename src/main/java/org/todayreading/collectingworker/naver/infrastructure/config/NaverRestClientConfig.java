@@ -27,14 +27,16 @@ public class NaverRestClientConfig {
    * @return Naver API 호출에 사용되는 RestClient
    */
   @Bean
-  public RestClient naverRestClient(
+  public RestClient naverBookRestClient(
       NaverApiProperties properties,
       RestClient.Builder builder
   ) {
+
+    NaverApiProperties.BookProperties bookProps = properties.getBook();
     return builder
-        .baseUrl(properties.getBaseUrl())
-        .defaultHeader("X-Naver-Client-Id", properties.getClientId())
-        .defaultHeader("X-Naver-Client-Secret", properties.getClientSecret())
+        .baseUrl(bookProps.getBaseUrl())
+        .defaultHeader("X-Naver-Client-Id", bookProps.getClientId())
+        .defaultHeader("X-Naver-Client-Secret", bookProps.getClientSecret())
         .build();
   }
 }

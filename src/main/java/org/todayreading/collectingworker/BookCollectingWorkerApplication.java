@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan(basePackages = "org.todayreading.collectingworker.naver.config")
+@ConfigurationPropertiesScan(basePackages = "org.todayreading.collectingworker.naver")
 public class BookCollectingWorkerApplication {
 
 	public static void main(String[] args) {
