@@ -27,7 +27,7 @@ public class NaverRestClientConfig {
    * @return Naver API 호출에 사용되는 RestClient
    */
   @Bean
-  public RestClient naverRestClient(
+  public RestClient naverBookRestClient(
       NaverApiProperties properties,
       RestClient.Builder builder
   ) {

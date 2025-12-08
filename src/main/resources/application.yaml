@@ -2,13 +2,19 @@ spring:
   application:
     name: book-collecting-worker
 
+  kafka:
+    bootstrap-servers: localhost:9092  # 또는 실제 Kafka 주소
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 naver:
   book:
     base-url: https://openapi.naver.com
     client-id: ${NAVER_BOOK_CLIENT_ID}
     client-secret: ${NAVER_BOOK_CLIENT_SECRET}
   search:
-    display: 100           # 1요청당 최대 100
-    max-start: 1000        # 풀스캔용 상한
+    display: 100           # 1요청당 최대 100 (API 한번 호출 당 몇권씩 가져올래?)
+    max-start: 1000        # 풀스캔용 상한 (1000이 넘어가면 나오지 않는다. ex: start가 999면 2권만 출력)
     daily-max-start: 301   # 일일 스캔용 상한
     sort: date             # 또는 sim

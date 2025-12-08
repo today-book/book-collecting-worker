@@ -11,7 +11,7 @@ import org.todayreading.collectingworker.naver.infrastructure.config.NaverApiPro
 @RequiredArgsConstructor
 public class NaverRestClient implements NaverSearchPort {
 
-  private final RestClient naverRestClient;
+  private final RestClient naverBookRestClient;
   private final NaverApiProperties naverApiProperties;
   private static final String PATH = "/v1/search/book.json";
 
@@ -27,7 +27,7 @@ public class NaverRestClient implements NaverSearchPort {
     String actualSort =
         (sort != null) ? sort : naverApiProperties.getSearch().getSort();
 
-    NaverSearchResponse response = naverRestClient.get()
+    NaverSearchResponse response = naverBookRestClient.get()
         .uri(uriBuilder -> uriBuilder
             .path(PATH)
             .queryParam("query", query)
