@@ -50,24 +50,16 @@ public class NaverCollectService {
    * 수집된 결과를 Kafka(book.raw 토픽 등)로 발행합니다.</p>
    *
    * <p>{@code maxStart}는 명시하지 않으며,
-   * 내부적으로 {@link NaverApiProperties.SearchProperties#getMaxStart()} 설정값을 사용합니다.</p>
+   * 내부적으로 {@link #scanAndPublish(List, Integer, String)} 호출 시
+   * {@code maxStart == null}로 전달하여
+   * {@link NaverApiProperties.SearchProperties#getMaxStart()} 설정값을 사용하게 합니다.</p>
    *
    * @author 박성준
    * @since 1.0.0
    */
   public void fullScanAndPublish() {
     List<String> queries = QueryPatternGenerator.generateFullScanQueries();
-    log.info("Start Naver full scan. queryCount={}", queries.size());
-
-    for (String query : queries) {
-      try {
-        collectAndPublishByQuery(query, null); // maxStart == null → search.max-start 사용
-      } catch (Exception ex) {
-        log.warn("Failed to collect/publish for query={} during full scan.", query, ex);
-      }
-    }
-
-    log.info("Finished Naver full scan.");
+    scanAndPublish(queries, null, "full");
   }
 
   /**
@@ -91,23 +83,39 @@ public class NaverCollectService {
    * 호출부(스케줄러 등)에서 {@code maxStart}를 적절히 지정할 수 있습니다.</p>
    *
    * @param maxStart 일일 스캔에서 사용할 최대 start 값
-   *                 (null이면 설정값의 max-start를 사용)
+   *                 (설정값 기반 기본 동작은 {@link #dailyScanAndPublish()} 사용)
    * @author 박성준
    * @since 1.0.0
    */
-  public void dailyScanAndPublish(Integer maxStart) {
+  public void dailyScanAndPublish(int maxStart) {
     List<String> queries = QueryPatternGenerator.generateDailyScanQueries();
-    log.info("Start Naver daily scan. queryCount={}, maxStart={}", queries.size(), maxStart);
+    scanAndPublish(queries, maxStart, "daily");
+  }
+
+  /**
+   * 공통 스캔/발행 로직을 담당하는 내부 유스케이스입니다.
+   *
+   * <p>전달된 쿼리 목록을 순회하면서, 각 쿼리에 대해
+   * {@link #collectAndPublishByQuery(String, Integer)}를 호출합니다.</p>
+   *
+   * @param queries  스캔에 사용할 쿼리 목록
+   * @param maxStart 최대 start 값 (null이면 설정값의 max-start 사용)
+   * @param jobName  로그에 사용될 작업 이름 (예: "full", "daily")
+   * @author 박성준
+   * @since 1.0.0
+   */
+  private void scanAndPublish(List<String> queries, Integer maxStart, String jobName) {
+    log.info("Start Naver {} scan. queryCount={}, maxStart={}", jobName, queries.size(), maxStart);
 
     for (String query : queries) {
       try {
         collectAndPublishByQuery(query, maxStart);
       } catch (Exception ex) {
-        log.warn("Failed to collect/publish for query={} during daily scan.", query, ex);
+        log.warn("Failed to collect/publish for query={} during {} scan.", query, jobName, ex);
       }
     }
 
-    log.info("Finished Naver daily scan.");
+    log.info("Finished Naver {} scan.", jobName);
   }
 
   /**

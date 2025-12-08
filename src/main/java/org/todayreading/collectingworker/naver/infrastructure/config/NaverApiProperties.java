@@ -3,9 +3,7 @@ package org.todayreading.collectingworker.naver.infrastructure.config;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.kafka.common.metrics.stats.Min;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * Naver API(책 검색 등) 호출에 필요한 설정 정보를 보관하는 프로퍼티 클래스.
