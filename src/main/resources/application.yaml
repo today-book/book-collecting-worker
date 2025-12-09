@@ -22,5 +22,6 @@ naver:
     max-start: 1000        # 풀스캔용 상한 (1000이 넘어가면 나오지 않는다. ex: start가 999면 2권만 출력)
     daily-max-start: 301   # 일일 스캔용 상한
     sort: date             # 또는 sim
+    request-interval-ms: 300   # 네이버 API 호출 간 최소 지연(ms)
   kafka:
     topic: book.raw
