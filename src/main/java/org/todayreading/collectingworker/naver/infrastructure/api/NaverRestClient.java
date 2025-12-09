@@ -1,6 +1,5 @@
 package org.todayreading.collectingworker.naver.infrastructure.api;
 
-import static org.slf4j.LoggerFactory.getLogger;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ import org.todayreading.collectingworker.naver.infrastructure.config.NaverApiPro
  * <p>포트 {@link NaverSearchPort}의 구현체로 애플리케이션 계층에서
  * 외부 API 호출을 위임받습니다.</p>
  * <p>
- * author 박성준
+ * @author 박성준
  *
  * @since 1.0.0
  */
@@ -75,7 +74,7 @@ public class NaverRestClient implements NaverSearchPort {
     int itemCount = (response.items() == null) ? 0 : response.items().size();
     // 단일 호출 기준 응답 아이템 수와 요청 파라미터 로그
     // (sort는 기본값 사용 여부와 무관하게 생략)
-    getLogger(NaverRestClient.class).info(
+    log.info(
         "Naver API call. query='{}' start={} display={} itemCount={}",
         query, actualStart, actualDisplay, itemCount);
     return response;
