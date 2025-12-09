@@ -1,5 +1,7 @@
 package org.todayreading.collectingworker.naver.application.job;
 
+import java.time.Duration;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -33,8 +35,12 @@ public class NaverCollectJobRunner {
    */
   @Async("naverBatchExecutor")
   public void runFullScanAsync() {
+    Instant startAt = Instant.now();
+    log.info("Naver collect job started. type=full");
     try {
       naverCollectService.fullScanAndPublish();
+      Duration elapsed = Duration.between(startAt, Instant.now());
+      log.info("Naver collect job completed. type=full elapsedMs={}", elapsed.toMillis() + "ms");
     } catch (Exception ex) {
       log.error("Async job failed: Naver full scan.", ex);
     }
@@ -53,12 +59,16 @@ public class NaverCollectJobRunner {
    */
   @Async("naverBatchExecutor")
   public void runDailyScanAsync(Integer maxStart) {
+    Instant startAt = Instant.now();
+    log.info("Naver collect job started. type=daily maxStart={}", maxStart);
     try {
       if (maxStart == null) {
         naverCollectService.dailyScanAndPublish();
       } else {
         naverCollectService.dailyScanAndPublish(maxStart);
       }
+      Duration elapsed = Duration.between(startAt, Instant.now());
+      log.info("Naver collect job completed. type=daily elapsedMs={} maxStart={}", elapsed.toMillis(), maxStart);
     } catch (Exception ex) {
       log.error("Async job failed: Naver daily scan. maxStart={}", maxStart, ex);
     }
