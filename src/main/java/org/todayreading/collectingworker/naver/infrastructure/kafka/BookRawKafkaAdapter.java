@@ -45,7 +45,5 @@ public class BookRawKafkaAdapter implements BookRawPublishPort {
     for (NaverSearchItem item : items) {
       kafkaTemplate.send(topicName, item);
     }
-
-    log.info("Published {} items to Kafka topic '{}'.", items.size(), topicName);
   }
 }
