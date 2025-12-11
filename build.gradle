@@ -44,7 +44,11 @@ dependencies {
     // .env 설정
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // csv
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
