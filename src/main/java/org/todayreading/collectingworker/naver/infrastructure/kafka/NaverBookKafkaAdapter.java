@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;
-import org.todayreading.collectingworker.naver.application.port.out.BookRawPublishPort;
+import org.todayreading.collectingworker.common.application.port.out.BookRawPublishPort;
 
 /**
  * {@link BookRawPublishPort}의 Kafka 기반 구현체입니다.
@@ -21,7 +21,7 @@ import org.todayreading.collectingworker.naver.application.port.out.BookRawPubli
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class BookRawKafkaAdapter implements BookRawPublishPort {
+public class NaverBookKafkaAdapter implements BookRawPublishPort {
 
   @Value("${naver.kafka.topic}")
   private String topicName;
