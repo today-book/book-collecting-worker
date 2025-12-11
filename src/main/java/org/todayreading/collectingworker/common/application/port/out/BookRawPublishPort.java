@@ -1,4 +1,4 @@
-package org.todayreading.collectingworker.naver.application.port.out;
+package org.todayreading.collectingworker.common.application.port.out;
 
 import java.util.List;
 import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;

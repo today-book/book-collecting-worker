@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;
 import org.todayreading.collectingworker.naver.application.pattern.QueryPatternGenerator;
-import org.todayreading.collectingworker.naver.application.port.out.BookRawPublishPort;
+import org.todayreading.collectingworker.common.application.port.out.BookRawPublishPort;
 import org.todayreading.collectingworker.naver.application.query.NaverQueryCollector;
 import org.todayreading.collectingworker.naver.infrastructure.config.NaverApiProperties;
 
