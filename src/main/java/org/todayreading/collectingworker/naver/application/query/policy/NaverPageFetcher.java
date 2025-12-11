@@ -13,7 +13,7 @@ import org.todayreading.collectingworker.naver.application.port.out.NaverSearchP
  *
  * <p>이 클래스는 {@link NaverSearchPort}를 사용해 주어진 검색어와 start 값으로
  * 한 페이지를 조회하며, HTTP 429 응답이 발생할 경우 최대 재시도 횟수까지
- * 지수형(1배, 2배, 3배) 대기 시간을 적용한 뒤 다시 호출을 시도합니다.
+ * 선형 백오프(1초, 2초, 3초) 대기 시간을 적용한 뒤 다시 호출을 시도합니다.
  * 재시도 후에도 429가 지속되면 null을 반환하여 상위 호출자가 수집을 종료할 수 있도록 합니다.</p>
  *
  * @author 박성준
@@ -38,9 +38,14 @@ public class NaverPageFetcher {
    * 재시도 시 기본 대기 시간(ms)입니다.
    *
    * <p>실제 대기 시간은 {@code BASE_BACKOFF_MS * attempt}로 계산되어
-   * 1초, 2초, 3초와 같이 증가합니다.</p>
+   * 1초, 2초, 3초와 같이 선형으로 증가합니다.</p>
    */
   private static final long BASE_BACKOFF_MS = 1_000L;
+
+  /**
+   * HTTP 429(Too Many Requests) 상태 코드 상수입니다.
+   */
+  private static final int HTTP_TOO_MANY_REQUESTS = 429;
 
   /**
    * 지정된 검색어와 시작 위치(start)로 네이버 책 검색 API를 호출합니다.
@@ -61,13 +66,12 @@ public class NaverPageFetcher {
    * @since 1.0.0
    */
   public NaverSearchResponse fetchPage(String query, int start) {
-    for (int attempt = 1; attempt <= MAX_RETRY_COUNT; attempt++) {
+    int attempt = 1;
+    while (attempt <= MAX_RETRY_COUNT) {
       try {
         return naverSearchPort.search(query, null, start, null);
       } catch (RestClientResponseException e) {
-        int status = e.getRawStatusCode();
-
-        if (status != 429) {
+        if (e.getRawStatusCode() != HTTP_TOO_MANY_REQUESTS) {
           throw e;
         }
 
@@ -78,7 +82,7 @@ public class NaverPageFetcher {
 //            start,
 //            attempt,
 //            MAX_RETRY_COUNT,
-//            status,
+//            e.getRawStatusCode(),
 //            e.getResponseBodyAsString()
 //        );
 
@@ -93,6 +97,7 @@ public class NaverPageFetcher {
         }
 
         sleepQuietly(BASE_BACKOFF_MS * attempt);
+        attempt++;
       }
     }
     return null;
