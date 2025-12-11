@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * 네이버 도서 일일 수집 배치를 스케줄링하기 위한 컴포넌트입니다.
  *
- * <p>매일 새벽 3시에 {@link NaverCollectJobRunner}를 통해
+ * <p>매일 새벽 2시에 {@link NaverCollectJobRunner}를 통해
  * 일일 스캔 배치를 비동기로 실행합니다.</p>
  *
  * <p>풀스캔(full scan)은 스케줄러에서 절대 호출하지 않으며,
@@ -23,7 +23,7 @@ public class NaverCollectScheduler {
   private final NaverCollectJobRunner jobRunner;
 
   /**
-   * 매일 새벽 3시에 일일 스캔 배치를 비동기로 실행합니다.
+   * 매일 새벽 2시에 일일 스캔 배치를 비동기로 실행합니다.
    *
    * <p>{@code maxStart} 값은 {@code null}로 전달하여,
    * {@link org.todayreading.collectingworker.naver.application.service.NaverCollectService#dailyScanAndPublish()}
@@ -37,7 +37,7 @@ public class NaverCollectScheduler {
    * @since 1.0.0
    */
 //  @Scheduled(cron = "0 * * * * *") // 매 분 0초마다 (테스트용)
-  @Scheduled(cron = "0 0 3 * * *")
+  @Scheduled(cron = "0 0 2 * * *")
   public void runDailyScanAt3AM() {
     jobRunner.runDailyScanAsync(null);
   }
