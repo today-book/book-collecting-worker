@@ -32,11 +32,11 @@ public class NaverRestClientConfig {
       RestClient.Builder builder
   ) {
 
-    NaverApiProperties.BookProperties bookProps = properties.getBook();
+    NaverApiProperties.BookProperties bookProps = properties.book();
     return builder
-        .baseUrl(bookProps.getBaseUrl())
-        .defaultHeader("X-Naver-Client-Id", bookProps.getClientId())
-        .defaultHeader("X-Naver-Client-Secret", bookProps.getClientSecret())
+        .baseUrl(bookProps.baseUrl())
+        .defaultHeader("X-Naver-Client-Id", bookProps.clientId())
+        .defaultHeader("X-Naver-Client-Secret", bookProps.clientSecret())
         .build();
   }
 }

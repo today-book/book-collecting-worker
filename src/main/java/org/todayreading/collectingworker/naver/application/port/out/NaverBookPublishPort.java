@@ -1,4 +1,4 @@
-package org.todayreading.collectingworker.common.application.port.out;
+package org.todayreading.collectingworker.naver.application.port.out;
 
 import java.util.List;
 import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;
@@ -17,7 +17,7 @@ import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;
  * @author 박성준
  * @since 1.0.0
  */
-public interface BookRawPublishPort {
+public interface NaverBookPublishPort {
 
   /**
    * 수집된 네이버 도서 아이템 목록을 외부 시스템으로 발행합니다.

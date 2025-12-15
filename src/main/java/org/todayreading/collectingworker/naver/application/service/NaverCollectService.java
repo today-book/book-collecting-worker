@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;
 import org.todayreading.collectingworker.naver.application.pattern.QueryPatternGenerator;
-import org.todayreading.collectingworker.common.application.port.out.BookRawPublishPort;
+import org.todayreading.collectingworker.naver.application.port.out.NaverBookPublishPort;
 import org.todayreading.collectingworker.naver.application.query.NaverQueryCollector;
 import org.todayreading.collectingworker.naver.infrastructure.config.NaverApiProperties;
 
@@ -23,7 +23,7 @@ import org.todayreading.collectingworker.naver.infrastructure.config.NaverApiPro
  *
  * <p>쿼리 패턴 생성은 {@link QueryPatternGenerator},
  * 단일 검색어에 대한 페이징 수집은 {@link NaverQueryCollector},
- * 수집된 결과 발행은 {@link BookRawPublishPort}에 각각 위임합니다.</p>
+ * 수집된 결과 발행은 {@link NaverBookPublishPort}에 각각 위임합니다.</p>
  *
  * @author 박성준
  * @since 1.0.0
@@ -37,7 +37,7 @@ public class NaverCollectService {
   private final NaverQueryCollector naverQueryCollector;
 
   /** 수집된 원시 도서 데이터를 외부 시스템(Kafka 등)으로 발행하는 포트입니다. */
-  private final BookRawPublishPort bookRawPublishPort;
+  private final NaverBookPublishPort bookRawPublishPort;
 
   /** 네이버 API 관련 설정 (특히 search.max-start, search.daily-max-start 등)입니다. */
   private final NaverApiProperties naverApiProperties;
@@ -52,7 +52,7 @@ public class NaverCollectService {
    * <p>{@code maxStart}는 명시하지 않으며,
    * 내부적으로 {@link #scanAndPublish(List, Integer, String)} 호출 시
    * {@code maxStart == null}로 전달하여
-   * {@link NaverApiProperties.SearchProperties#getMaxStart()} 설정값을 사용하게 합니다.</p>
+   * {@link NaverApiProperties.SearchProperties#maxStart()} 설정값을 사용하게 합니다.</p>
    *
    * @author 박성준
    * @since 1.0.0
@@ -72,7 +72,7 @@ public class NaverCollectService {
    * @since 1.0.0
    */
   public void dailyScanAndPublish() {
-    int dailyMaxStart = naverApiProperties.getSearch().getDailyMaxStart();
+    int dailyMaxStart = naverApiProperties.search().dailyMaxStart();
     dailyScanAndPublish(dailyMaxStart);
   }
 

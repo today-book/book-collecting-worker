@@ -98,7 +98,7 @@ public class NaverQueryCollector {
   private int resolveLimitStart(Integer maxStart) {
     return (maxStart != null)
         ? maxStart
-        : naverApiProperties.getSearch().getMaxStart();
+        : naverApiProperties.search().maxStart();
   }
 
   /**

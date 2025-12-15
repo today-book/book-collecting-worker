@@ -1,16 +1,17 @@
 package org.todayreading.collectingworker.naver.infrastructure.kafka;
 
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.todayreading.collectingworker.naver.application.dto.NaverSearchItem;
-import org.todayreading.collectingworker.common.application.port.out.BookRawPublishPort;
+import org.todayreading.collectingworker.naver.application.port.out.NaverBookPublishPort;
 
 /**
- * {@link BookRawPublishPort}의 Kafka 기반 구현체입니다.
+ * {@link NaverBookPublishPort}의 Kafka 기반 구현체입니다.
  *
  * <p>수집된 네이버 도서 원시 데이터를 Kafka의 {@link #topicName} 토픽으로 발행하는
  * 인프라스트럭처 어댑터 역할을 담당합니다.
@@ -20,13 +21,19 @@ import org.todayreading.collectingworker.common.application.port.out.BookRawPubl
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
-public class NaverBookKafkaAdapter implements BookRawPublishPort {
+public class NaverBookKafkaAdapter implements NaverBookPublishPort {
 
   @Value("${naver.kafka.topic}")
   private String topicName;
 
   private final KafkaTemplate<String, NaverSearchItem> kafkaTemplate;
+
+  @Autowired
+  public NaverBookKafkaAdapter(
+      @Qualifier("naverBookKafkaTemplate")
+      KafkaTemplate<String, NaverSearchItem> kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
+  }
 
   /**
    * 수집된 네이버 도서 아이템 목록을 Kafka 토픽으로 발행합니다.
