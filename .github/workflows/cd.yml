@@ -29,6 +29,14 @@ jobs:
           java-version: 21
           cache: gradle
 
+      - name: Configure Gradle for GitHub Packages
+        run: |
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<EOF
+          gpr.user=${{ github.actor }}
+          gpr.key=${{ secrets.COMMON_CORE_READ_PACKAGES_TOKEN }}
+          EOF
+
       - name: Build bootJar
         run: |
           chmod +x gradlew
@@ -104,14 +112,14 @@ jobs:
               sudo docker run -d --name "${CONTAINER_NAME}" \
                 --restart unless-stopped \
                 --network "${DOCKER_NETWORK}" \
-                -p "${APP_PORT}:${APP_PORT}" \
+                -p "${APP_PORT}:9001" \
                 --env-file "${APP_ENV_FILE}" \
                 "${IMAGE_URI}"
             else
               sudo docker run -d --name "${CONTAINER_NAME}" \
                 --restart unless-stopped \
                 --network "${DOCKER_NETWORK}" \
-                -p "${APP_PORT}:${APP_PORT}" \
+                -p "${APP_PORT}:9001" \
                 -e SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE}" \
                 "${IMAGE_URI}"
             fi
