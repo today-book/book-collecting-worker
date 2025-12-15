@@ -39,6 +39,10 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // common-core
     implementation 'org.todaybook:common-core:1.1.0'
 
     // .env 설정
@@ -55,4 +59,12 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named("jar") {
+    enabled = false
+}
+
+tasks.named("bootJar") {
+    archiveFileName = "app.jar"
 }
