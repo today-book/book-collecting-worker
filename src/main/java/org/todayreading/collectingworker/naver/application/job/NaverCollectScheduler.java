@@ -38,7 +38,7 @@ public class NaverCollectScheduler {
    */
 //  @Scheduled(cron = "0 * * * * *") // 매 분 0초마다 (테스트용)
   @Scheduled(cron = "0 0 2 * * *")
-  public void runDailyScanAt3AM() {
+  public void runDailyScanAt2AM() {
     jobRunner.runDailyScanAsync(null);
   }
 }

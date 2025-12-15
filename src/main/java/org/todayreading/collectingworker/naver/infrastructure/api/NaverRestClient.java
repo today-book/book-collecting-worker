@@ -50,10 +50,10 @@ public class NaverRestClient implements NaverSearchPort {
       Integer start,
       String sort) {
     int actualDisplay =
-        (display != null) ? display : naverApiProperties.getSearch().getDisplay();
+        (display != null) ? display : naverApiProperties.search().display();
     int actualStart = (start != null) ? start : 1;
     String actualSort =
-        (sort != null) ? sort : naverApiProperties.getSearch().getSort();
+        (sort != null) ? sort : naverApiProperties.search().sort();
 
     NaverSearchResponse response = naverBookRestClient.get()
         .uri(uriBuilder -> uriBuilder
