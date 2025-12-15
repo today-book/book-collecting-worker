@@ -3,25 +3,47 @@ spring:
     name: book-collecting-worker
 
   kafka:
+    # Kafka 클러스터 주소 (환경변수로 주입)
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
-    properties:
-      security.protocol: SASL_PLAINTEXT
-      sasl.mechanism: SCRAM-SHA-256
-      sasl.jaas.config: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_SASL_USERNAME}" password="${KAFKA_SASL_PASSWORD}";'
+
+    # 공통 Producer 직렬화 설정
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+    # Kafka 보안 설정
+    properties:
+      security.protocol: SASL_PLAINTEXT
+      sasl.mechanism: SCRAM-SHA-256
+      sasl.jaas.config: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_SASL_USERNAME}" password="${KAFKA_SASL_PASSWORD}";'
+
+# ===========================
+# Naver Book API 설정
+# ===========================
 naver:
   book:
     base-url: https://openapi.naver.com
     client-id: ${NAVER_BOOK_CLIENT_ID}
     client-secret: ${NAVER_BOOK_CLIENT_SECRET}
   search:
-    display: 100           # 1요청당 최대 100 (API 한번 호출 당 몇권씩 가져올래?)
-    max-start: 1000        # 풀스캔용 상한 (1000이 넘어가면 나오지 않는다. ex: start가 999면 2권만 출력)
-    daily-max-start: 301   # 일일 스캔용 상한
+    display: 100           # 1요청당 최대 조회 건수(API 한번 호출 당 몇권씩 가져올래?)
+    max-start: 1000        # full-scan 상한 (네이버 API start 최대 1000)
+    daily-max-start: 301   # daily-scan 상한
     sort: date             # 또는 sim
     request-interval-ms: 300   # 네이버 API 호출 간 최소 지연(ms)
   kafka:
-    topic: book.raw
+    topic: book.raw        # 네이버 원본 도서 데이터 토픽명
+
+# ===========================
+# CSV Book Import 설정
+# ===========================
+csv:
+  book:
+    # 처리할 CSV 파일 경로 (환경별로 환경변수만 다르게 설정)
+    # - local:  /Users/seongjun/Documents/thirdproject/data/csv/xxx.csv
+    # - prod:   /data/csv/xxx.csv
+    file-path: ${CSV_BOOK_FILE_PATH}
+
+    kafka:
+      # CSV 원본 라인(raw line) 전용 토픽명
+      topic: csv-book.raw
