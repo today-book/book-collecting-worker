@@ -61,7 +61,12 @@ public class CsvBookDataTransfer {
 
     // 실제 파일 읽기/디렉터리 순회는 포트 구현체(인프라)가 수행하고,
     // 읽기 과정에서 발생하는 이벤트를 listener로 전달합니다.
-    csvFileReadPort.read(inputPath, listener);
+    try {
+      csvFileReadPort.read(inputPath, listener);
+    } catch (Exception e) {
+      log.error("CSV 파일 읽기 중 오류 발생. inputPath={}", inputPath, e);
+      throw new CsvTransferException("CSV 전송 실패: " + inputPath, e);
+    }
 
     // 전체 합계 요약 로그(전체 1회)
     logOverallSummary(inputPath, stats);
