@@ -51,6 +51,10 @@ csv:
       # CSV 원본 라인(raw line) 전용 토픽명
       topic: csv-book.raw
 
+# ===========================
+# Prometheus 설정
+# ===========================
+
 management:
   endpoints:
     web:
