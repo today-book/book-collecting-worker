@@ -1,5 +1,6 @@
 package org.todayreading.collectingworker.csv.infrastructure.kafka;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -27,6 +28,10 @@ import org.todayreading.collectingworker.csv.infrastructure.config.CsvBookProper
 @Slf4j
 @Component
 public class CsvBookKafkaAdapter implements CsvBookPublishPort {
+
+  private static final int SAMPLE_MAX_LEN = 500;
+  private static final AtomicBoolean SAMPLE_LOGGED = new AtomicBoolean(false);
+
 
   /**
    * csv.book.* 설정 값을 바인딩한 프로퍼티입니다.
@@ -77,6 +82,12 @@ public class CsvBookKafkaAdapter implements CsvBookPublishPort {
       return;
     }
 
+    // 샘플 1건만 출력(형식 확인용)
+    if (SAMPLE_LOGGED.compareAndSet(false, true)) {
+      String sample = abbreviate(rawLine, SAMPLE_MAX_LEN);
+      log.info("CSV 샘플 1건(payload, raw line). len={}, sample={}", rawLine.length(), sample);
+    }
+
     // application.yml의 csv.book.kafka.topic 설정에서 토픽 이름을 조회합니다.
     String topic = properties.kafka().topic();
 
@@ -93,5 +104,15 @@ public class CsvBookKafkaAdapter implements CsvBookPublishPort {
             );
           }
         });
+  }
+
+  private static String abbreviate(String s, int maxLen) {
+    if (s == null) {
+      return null;
+    }
+    if (s.length() <= maxLen) {
+      return s;
+    }
+    return s.substring(0, maxLen) + "...(truncated)";
   }
 }
