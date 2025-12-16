@@ -50,3 +50,16 @@ csv:
     kafka:
       # CSV 원본 라인(raw line) 전용 토픽명
       topic: csv-book.raw
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      access: read_only
+
+  metrics:
+    tags:
+      application: book-collecting-worker
