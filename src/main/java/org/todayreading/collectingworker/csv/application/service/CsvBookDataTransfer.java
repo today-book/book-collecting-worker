@@ -1,34 +1,21 @@
 package org.todayreading.collectingworker.csv.application.service;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.todayreading.collectingworker.csv.application.port.out.CsvBookPublishPort;
+import org.todayreading.collectingworker.csv.application.port.out.CsvFileReadPort;
+import org.todayreading.collectingworker.csv.application.service.command.CsvTransferCommand;
 
 /**
- * CSV 파일을 라인 단위로 읽어, 각 라인의 원본 문자열을
- * {@link CsvBookPublishPort}를 통해 외부 시스템(Kafka 등)으로 발행하는
- * 애플리케이션 서비스입니다.
+ * CSV 입력(파일/디렉터리)을 읽어 라인 발행을 오케스트레이션하는 애플리케이션 서비스입니다.
  *
- * <p>이 클래스는 CSV 파일을 읽어 <b>파싱하지 않은 원본 라인(raw line)</b> 그대로
- * 메시지 브로커로 전달하는 역할만 담당하며,
- * 컬럼 단위 파싱 및 도메인 매핑은 이후 단계(컨슈머 서비스)에서 수행합니다.
- *
- * <p>이 클래스의 책임:
+ * <p>이 클래스는 "흐름(오케스트레이션)"만 담당합니다.</p>
  * <ul>
- *   <li>설정 파일(csv.book.file-path)에 지정된 CSV 파일 경로를 사용해 파일 스트림을 연다</li>
- *   <li>파일을 라인 단위로 안전하게 읽는다</li>
- *   <li>헤더 라인 및 공백 라인은 스킵한다</li>
- *   <li>각 라인을 {@link CsvBookPublishPort}를 통해 발행한다</li>
- *   <li>라인 처리 중 예외 발생 시 해당 라인만 로그로 남기고 다음 라인으로 계속 진행한다</li>
+ *   <li>CSV 읽기: {@link CsvFileReadPort}가 담당(인프라 구현)</li>
+ *   <li>라인 발행: {@link CsvBookPublishPort}가 담당(인프라 구현)</li>
+ *   <li>스킵/집계/파일별 요약: {@link CsvTransferListener}가 담당(정책/처리)</li>
  * </ul>
  *
  * @author 박성준
@@ -39,95 +26,62 @@ import org.todayreading.collectingworker.csv.application.port.out.CsvBookPublish
 @RequiredArgsConstructor
 public class CsvBookDataTransfer {
 
-  /** CSV 파일을 라인 단위로 읽을 때 사용할 버퍼 크기(문자 단위)입니다. */
-  private static final int CSV_BUFFER_SIZE = 16_000;
-
+  /** CSV 원본 라인을 외부(Kafka 등)로 발행하는 출력 포트입니다. */
   private final CsvBookPublishPort csvBookPublishPort;
 
-  /** application.yml 의 {@code csv.book.file-path}에서 주입되는 CSV 파일 경로입니다. */
-  @Value("${csv.book.file-path}")
-  private String csvBookFilePath;
+  /** CSV 파일/디렉터리를 읽어 파일 단위 이벤트로 전달하는 출력 포트입니다. */
+  private final CsvFileReadPort csvFileReadPort;
 
   /**
-   * 설정된 CSV 파일 경로( {@code csv.book.file-path} )의 CSV 파일을 읽어,
-   * 각 라인의 원본 문자열을 {@link CsvBookPublishPort}를 통해 발행합니다.
+   * CSV 전송을 실행합니다.
    *
-   * <p>처리 정책:
-   * <ul>
-   *   <li>첫 번째 라인은 헤더로 간주하고 스킵합니다.</li>
-   *   <li>빈 라인(공백 문자열)만 포함된 라인은 스킵합니다.</li>
-   *   <li>각 라인 처리 중 예외가 발생하면 해당 라인만 로그로 남기고 다음 라인으로 계속 진행합니다.</li>
-   *   <li>파일 오픈/읽기 중 발생한 {@link IOException}은 {@link UncheckedIOException}으로 래핑하여 전파합니다.</li>
-   * </ul>
+   * <p>처리 흐름:</p>
+   * <ol>
+   *   <li>입력 경로를 커맨드에서 조회</li>
+   *   <li>통계 누적 객체({@link TransferStats}) 생성</li>
+   *   <li>이벤트 리스너({@link CsvTransferListener}) 생성</li>
+   *   <li>{@link CsvFileReadPort}를 통해 파일을 읽고, 이벤트를 리스너로 전달</li>
+   *   <li>처리 종료 후 전체 요약 로그 출력</li>
+   * </ol>
    *
-   * @throws UncheckedIOException 파일 읽기 실패 시 발생
+   * @param command CSV 전송 입력 커맨드(파일 또는 디렉터리 경로)
    */
-  public void transfer() {
-    if (csvBookFilePath == null || csvBookFilePath.isBlank()) {
-      throw new IllegalStateException("csv.book.file-path 설정이 비어 있습니다.");
-    }
+  public void transfer(CsvTransferCommand command) {
+    // 유스케이스 입력(파일/디렉터리 경로)
+    Path inputPath = command.inputPath();
 
-    log.info("CSV 파일 전송 시작. filePath={}", csvBookFilePath);
+    // 실행 시작 로그(전체 1회)
+    log.info("CSV 전송 시작. inputPath={}", inputPath);
 
-    try (FileInputStream fis = new FileInputStream(csvBookFilePath);
-        InputStreamReader isr = new InputStreamReader(fis, UTF_8);
-        BufferedReader br = new BufferedReader(isr, CSV_BUFFER_SIZE)) {
+    // 파일별/전체 통계 누적 객체
+    TransferStats stats = new TransferStats();
 
-      String line;
-      int lineNumber = 0;
+    // 파일 이벤트(onFileStart/onLine/onFileEnd)를 받아 스킵/발행/집계를 처리하는 리스너
+    CsvTransferListener listener = new CsvTransferListener(csvBookPublishPort, stats);
 
-      while ((line = br.readLine()) != null) {
-        lineNumber++;
+    // 실제 파일 읽기/디렉터리 순회는 포트 구현체(인프라)가 수행하고,
+    // 읽기 과정에서 발생하는 이벤트를 listener로 전달합니다.
+    csvFileReadPort.read(inputPath, listener);
 
-        if (shouldSkipLine(lineNumber, line)) {
-          continue;
-        }
-
-        processLine(lineNumber, line);
-      }
-
-      log.info("CSV 파일 전송 완료. filePath={}, totalLines={}", csvBookFilePath, lineNumber);
-    } catch (IOException e) {
-      throw new UncheckedIOException("CSV 파일 읽기 실패: " + csvBookFilePath, e);
-    }
+    // 전체 합계 요약 로그(전체 1회)
+    logOverallSummary(inputPath, stats);
   }
 
   /**
-   * 1행(헤더) 또는 빈 라인 여부를 판단합니다.
+   * 실행 전체에 대한 요약 로그를 출력합니다.
    *
-   * <p>이 메서드는 {@link BufferedReader#readLine()} 호출 이후에만 사용되므로
-   * {@code line} 파라미터가 {@code null}이 아님이 보장됩니다.
-   *
-   * @param lineNumber 현재 라인 번호(1부터 시작)
-   * @param line 읽은 라인 문자열
-   * @return 스킵해야 하는 라인인 경우 {@code true}, 그렇지 않으면 {@code false}
+   * <p>파일별 요약은 {@link CsvTransferListener}에서 출력하고,
+   * 여기서는 전체 합계만 출력합니다.</p>
    */
-  private static boolean shouldSkipLine(int lineNumber, String line) {
-    if (lineNumber == 1) {
-      // 헤더 라인 스킵
-      return true;
-    }
-    if (line.isBlank()) {
-      // 공백 라인 스킵
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * 단일 CSV 라인(원본 문자열)을 {@link CsvBookPublishPort}를 통해 외부 시스템으로 발행합니다.
-   *
-   * <p>이 과정에서 발생하는 모든 예외는 잡아서 경고 로그를 남기고,
-   * 호출자(루프)는 다음 라인 처리를 계속 진행할 수 있도록 합니다.
-   *
-   * @param lineNumber 현재 처리 중인 라인 번호
-   * @param line CSV 원본 라인 문자열
-   */
-  private void processLine(int lineNumber, String line) {
-    try {
-      csvBookPublishPort.publish(line);
-    } catch (Exception e) {
-      log.warn("CSV 라인 발행 실패. lineNumber={}", lineNumber, e);
-    }
+  private void logOverallSummary(Path inputPath, TransferStats stats) {
+    log.info(
+        "CSV 전송 완료. inputPath={}, fileCount={}, totalLines={}, skippedLines={}, publishedLines={}, failedLines={}",
+        inputPath,
+        stats.fileCount(),
+        stats.totalLines(),
+        stats.skippedLines(),
+        stats.publishedLines(),
+        stats.failedLines()
+    );
   }
 }
