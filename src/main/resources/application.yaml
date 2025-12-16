@@ -44,7 +44,7 @@ csv:
     # - local(file): /Users/seongjun/Documents/thirdproject/data/csv/xxx.csv
     # - prod(dir):  /data/csv
     # - prod(file): /data/csv/xxx.csv
-    file-path: /Users/seongjun/Documents/thirdproject/data/csv/NL_BO_SPECIES_MASTER_NEW_202112.csv
+    file-path: /Users/seongjun/Documents/thirdproject/data/csv
     runner:
       enabled: true
     kafka:
