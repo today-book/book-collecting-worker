@@ -73,6 +73,7 @@ public class CsvLocalReader implements CsvFileReadPort {
    */
   private void readDirectory(Path dir, CsvFileReadListener listener) {
     List<Path> csvFiles = listCsvFiles(dir);
+    log.info("CSV 디렉터리 읽기 시작. dir={}, csvFileCount={}", dir, csvFiles.size());
 
     if (csvFiles.isEmpty()) {
       log.warn("CSV 디렉터리에 .csv 파일이 없습니다. dir={}", dir);
@@ -115,6 +116,7 @@ public class CsvLocalReader implements CsvFileReadPort {
   private void readSingleFile(Path file, CsvFileReadListener listener) {
     validateRegularFile(file);
 
+    log.info("CSV 파일 읽기 시작. file={}", file);
     listener.onFileStart(file);
 
     try (BufferedReader br =

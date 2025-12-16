@@ -39,11 +39,14 @@ naver:
 # ===========================
 csv:
   book:
-    # 처리할 CSV 파일 경로 (환경별로 환경변수만 다르게 설정)
-    # - local:  /Users/seongjun/Documents/thirdproject/data/csv/xxx.csv
-    # - prod:   /data/csv/xxx.csv
-    file-path: ${CSV_BOOK_FILE_PATH}
-
+    # 처리할 CSV 디렉터리(권장) 또는 단일 파일 경로
+    # - local(dir): /Users/seongjun/Documents/thirdproject/data/csv
+    # - local(file): /Users/seongjun/Documents/thirdproject/data/csv/xxx.csv
+    # - prod(dir):  /data/csv
+    # - prod(file): /data/csv/xxx.csv
+    file-path: /Users/seongjun/Documents/thirdproject/data/csv/NL_BO_SPECIES_MASTER_NEW_202112.csv
+    runner:
+      enabled: true
     kafka:
       # CSV 원본 라인(raw line) 전용 토픽명
       topic: csv-book.raw
