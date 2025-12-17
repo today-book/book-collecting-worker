@@ -46,7 +46,7 @@ csv:
     # - prod(file): /data/csv/xxx.csv
     file-path: /Users/seongjun/Documents/thirdproject/data/csv
     runner:
-      enabled: true
+      enabled: false # 자동 실행 시에는 ture로 변경
     kafka:
       # CSV 원본 라인(raw line) 전용 토픽명
       topic: csv-book.raw
