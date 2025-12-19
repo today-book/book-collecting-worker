@@ -44,9 +44,6 @@ dependencies {
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // common-core
-    implementation 'org.todaybook:common-core:1.1.0'
-
     // .env 설정
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
