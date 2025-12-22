@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.todayreading.collectingworker.naver.application.service.NaverCollectService;
 
 /**
- * 네이버 도서 수집 배치(full/daily)를 비동기로 실행하기 위한 잡 실행기입니다.
+ * 네이버 도서 수집 배치(full)를 비동기로 실행하기 위한 잡 실행기입니다.
  *
  * <p>이 클래스는 HTTP 컨트롤러나 스케줄러에서 호출되며,
  * 실제 배치 유스케이스 로직은 {@link NaverCollectService}에 위임합니다.
@@ -43,34 +43,6 @@ public class NaverCollectJobRunner {
       log.info("Naver collect job completed. type=full elapsedMs={}", elapsed.toMillis() + "ms");
     } catch (Exception ex) {
       log.error("Async job failed: Naver full scan.", ex);
-    }
-  }
-
-  /**
-   * 네이버 도서 일일 스캔 배치를 비동기로 실행합니다.
-   *
-   * <p>{@code maxStart}가 {@code null}이면
-   * {@link NaverCollectService#dailyScanAndPublish()}를 호출하고,
-   * 명시된 값이 있으면 {@link NaverCollectService#dailyScanAndPublish()} (Integer)}를 호출합니다.</p>
-   *
-   * @param maxStart 일일 스캔에서 사용할 최대 start 값 (null 이면 설정값 사용)
-   * @author 박성준
-   * @since 1.0.0
-   */
-  @Async("naverBatchExecutor")
-  public void runDailyScanAsync(Integer maxStart) {
-    Instant startAt = Instant.now();
-    log.info("Naver collect job started. type=daily maxStart={}", maxStart);
-    try {
-      if (maxStart == null) {
-        naverCollectService.dailyScanAndPublish();
-      } else {
-        naverCollectService.dailyScanAndPublish(maxStart);
-      }
-      Duration elapsed = Duration.between(startAt, Instant.now());
-      log.info("Naver collect job completed. type=daily elapsedMs={} maxStart={}", elapsed.toMillis(), maxStart);
-    } catch (Exception ex) {
-      log.error("Async job failed: Naver daily scan. maxStart={}", maxStart, ex);
     }
   }
 }

@@ -42,7 +42,6 @@ public record NaverApiProperties(
    * <ul>
    *   <li>{@code display} : 한 번의 요청에서 가져올 결과 개수 (1~100)</li>
    *   <li>{@code maxStart} : 풀스캔(full scan) 시 사용할 start 파라미터의 상한 값</li>
-   *   <li>{@code dailyMaxStart} : 일일 스캔(daily scan) 시 사용할 start 파라미터의 상한 값</li>
    *   <li>{@code sort} : 정렬 기준 (예: {@code sim}, {@code date})</li>
    *   <li>{@code requestIntervalMs} : 연속 호출 간 대기 시간(간격), 밀리초 단위</li>
    * </ul>
@@ -50,7 +49,6 @@ public record NaverApiProperties(
   public record SearchProperties(
       int display,          // naver.search.display
       int maxStart,         // naver.search.max-start
-      int dailyMaxStart,    // naver.search.daily-max-start
       String sort,          // naver.search.sort
       long requestIntervalMs // naver.search.request-interval-ms (연속 호출 간 간격, ms 단위)
   ) {

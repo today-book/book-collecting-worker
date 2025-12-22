@@ -13,7 +13,7 @@ import org.todayreading.collectingworker.naver.application.query.NaverQueryColle
  * 네이버 책 검색 API를 단건 조회하거나,
  * 특정 검색어에 대해 수집만 수행하는 보조/점검용 애플리케이션 서비스입니다.
  *
- * <p>이 서비스는 전체 풀스캔/일일 스캔 배치 파이프라인과는 별도로,
+ * <p>이 서비스는 전체 풀스캔 배치 파이프라인과는 별도로,
  * 다음과 같은 용도로 사용하는 것을 목표로 합니다.
  * <ul>
  *   <li>단일 페이지 조회로 네이버 API 응답을 직접 확인</li>

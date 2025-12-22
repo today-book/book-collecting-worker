@@ -28,7 +28,6 @@ naver:
   search:
     display: 100           # 1요청당 최대 조회 건수(API 한번 호출 당 몇권씩 가져올래?)
     max-start: 1000        # full-scan 상한 (네이버 API start 최대 1000)
-    daily-max-start: 301   # daily-scan 상한
     sort: date             # 또는 sim
     request-interval-ms: 300   # 네이버 API 호출 간 최소 지연(ms)
   kafka:
