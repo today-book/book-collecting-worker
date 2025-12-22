@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.todayreading.collectingworker.naver.application.job.NaverCollectJobRunner;
 
@@ -44,23 +43,4 @@ public class NaverCollectBatchController {
     return ResponseEntity.accepted().build();
   }
 
-  /**
-   * 네이버 도서 일일 스캔 배치를 비동기로 실행합니다.
-   *
-   * <p>{@code maxStart} 파라미터가 없으면 설정값(daily-max-start)을 사용하고,
-   * 값이 지정된 경우 해당 최대 start 범위까지만 일일 스캔을 수행합니다.
-   * 요청은 배치 완료 여부와 관계없이 {@code 202 Accepted}를 즉시 반환합니다.</p>
-   *
-   * @param maxStart 일일 스캔에서 사용할 최대 start 값(옵션, null 허용)
-   * @return 수집 작업이 비동기로 접수되었음을 나타내는 HTTP 202 응답
-   * @author 박성준
-   * @since 1.0.0
-   */
-  @PostMapping("/daily-scan")
-  public ResponseEntity<Void> triggerDailyScan(
-      @RequestParam(name = "maxStart", required = false) Integer maxStart
-  ) {
-    jobRunner.runDailyScanAsync(maxStart);
-    return ResponseEntity.accepted().build();
-  }
 }
