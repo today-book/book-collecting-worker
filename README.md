@@ -10,7 +10,7 @@ Naver Book API 풀스캔 수집과 CSV 파일 수집을 지원하며, 운영 점
 
 ### 설치
 - Java 21 설치
-- Kafka 브로커 준비 (SASL/SCRAM-SHA-256 기본 가정)
+- Kafka 브로커 준비
 - Naver Book API 인증 정보 준비
 
 ### 컴파일 방법
