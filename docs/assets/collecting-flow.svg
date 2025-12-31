@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360" role="img" aria-label="book-collecting-worker data flow">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2f3b4a" />
+    </marker>
+    <style><![CDATA[
+      .title { font: 600 18px 'Arial', sans-serif; fill: #1f2a37; }
+      .label { font: 14px 'Arial', sans-serif; fill: #1f2a37; }
+      .box { fill: #f8f5ef; stroke: #2f3b4a; stroke-width: 1.5; }
+      .accent { fill: #e6f0ff; stroke: #2f3b4a; stroke-width: 1.5; }
+      .topic { fill: #fff7ed; stroke: #2f3b4a; stroke-width: 1.5; }
+      .line { stroke: #2f3b4a; stroke-width: 1.5; marker-end: url(#arrow); }
+    ]]></style>
+  </defs>
+  <rect width="100%" height="100%" fill="#fcfaf6" />
+  <text x="30" y="40" class="title">Book Collecting Worker - Data Flow</text>
+
+  <rect x="40" y="90" width="220" height="80" rx="10" ry="10" class="box" />
+  <text x="60" y="125" class="label">Naver Book API</text>
+  <text x="60" y="150" class="label">/v1/search/book.json</text>
+
+  <rect x="40" y="210" width="220" height="80" rx="10" ry="10" class="box" />
+  <text x="60" y="245" class="label">CSV Files / Dir</text>
+  <text x="60" y="270" class="label">UTF-8, .csv</text>
+
+  <rect x="340" y="140" width="260" height="120" rx="12" ry="12" class="accent" />
+  <text x="360" y="175" class="label">book-collecting-worker</text>
+  <text x="360" y="200" class="label">Naver full scan + CSV ingest</text>
+  <text x="360" y="225" class="label">Scheduler + Inspect API</text>
+
+  <rect x="700" y="110" width="220" height="80" rx="10" ry="10" class="topic" />
+  <text x="720" y="145" class="label">Kafka topic</text>
+  <text x="720" y="170" class="label">book.raw (JSON)</text>
+
+  <rect x="700" y="220" width="220" height="80" rx="10" ry="10" class="topic" />
+  <text x="720" y="255" class="label">Kafka topic</text>
+  <text x="720" y="280" class="label">csv-book.raw (line)</text>
+
+  <line x1="260" y1="130" x2="340" y2="190" class="line" />
+  <line x1="260" y1="250" x2="340" y2="210" class="line" />
+  <line x1="600" y1="190" x2="700" y2="150" class="line" />
+  <line x1="600" y1="210" x2="700" y2="250" class="line" />
+</svg>
